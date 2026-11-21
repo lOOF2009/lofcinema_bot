@@ -1,5 +1,5 @@
 
-name: Scene Cinemas Public Bot
+name: check
 
 on:
   schedule:
@@ -9,36 +9,22 @@ on:
 permissions:
   contents: write
 
-concurrency:
-  group: scene-cinemas-bot
-  cancel-in-progress: false
-
 jobs:
   run:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install packages
-        run: pip install requests beautifulsoup4
+      - run: pip install requests beautifulsoup4
 
-      - name: Register subscribers
-        run: python bot.py
+      - run: python check.py
         env:
           TOKEN: ${{ secrets.TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
 
-      - name: Check movies
-        run: python check.py
-        env:
-          TOKEN: ${{ secrets.TOKEN }}
-
-      - name: Save data
-        if: always()
-        run: |
-          git config user.name "Scene Bot"
-          git config user.email "bot@users.noreply.github.com"
-          git add -A
-          git commit -m "Update bot data" || true
-          git push
+      - run: |
+          git config user.name bot
+          git config user.email bot@users.noreply.github.com
+          git add seen.json
+          git commit -m "update" || true
+          git push || true
